@@ -2,7 +2,7 @@
 
 PhishLens is a local email classifier for Om, a cybersecurity and AI student who wants a project that is both a study tool and a demo. Paste a message. The app says **phishing** or **legitimate**, gives a probability, and shows two kinds of evidence: security checks a person can audit, and the words a linear model actually weighed.
 
-It is a defensive learning project. It does not send mail, open links, or help anyone write a lure. The mailbox it trains on is fiction.
+It is a defensive learning project. It does not send mail, open links, or help anyone write a lure. The mailbox it trains on is fiction. The holdout score on that mailbox is perfect. [Evaluation](#evaluation) is the section that says what that 1.000 is, and what a reviewer should refuse to conclude from it.
 
 ## Ethics, first
 
@@ -55,7 +55,7 @@ The Streamlit page loads ten synthetic examples.
 
 - Five caricatures: a suspended-account note, an invoice, a gift-card prize, a help desk on a free mailbox, and a quieter lookalike sign-in.
 - Four ordinary messages: a class announcement, a bookstore receipt, a calm IT reminder, and a facilities note that really does say "urgent".
-- One intentional miss, **Quoted in class**. A professor at `northwind.edu` quotes a fake message for Thursday's reading. The classroom label is legitimate. The model calls it phishing, because the quoted sentences still say "verify your account" and "enter your password". Bag-of-words features cannot see the quotation marks. That failure is the point of the button.
+- One intentional miss, **Quoted in class**. A professor at `northwind.edu` quotes a fake message for Thursday's reading. The classroom label is legitimate. The model calls it phishing, because the quoted sentences still say "verify your account" and "enter your password". Bag-of-words features cannot see the quotation marks. That failure is the point of the button. The message is not a row in the training file, so it cannot move the holdout score. [Evaluation](#evaluation) spells that limit out.
 
 Northwind University, Harbor Credit Union, and Cedar Books are fictional. Well-known brand names appear only inside those caricatures, on hosts such as `paypa1-secure.example`.
 
@@ -121,11 +121,29 @@ python -m src.predict \
 
 Demo ids: `suspension`, `invoice`, `prize`, `helpdesk`, `lookalike`, `class-note`, `receipt`, `security-reminder`, `facilities`, `quoted-homework`.
 
-## Held-out scores
+## Evaluation
 
-These numbers are from the committed training run (`models/metrics.json`).
+Read this before the score table. The figures are from the committed training run in `models/metrics.json`. They are the right figures for this file. They answer one narrow question: on a stratified slice of a mailbox that was built to be easy, did the linear model recover the split?
 
-The mailbox has **560** synthetic emails, **280** legitimate and **280** phishing. Training used a stratified 75/25 split, seed **42**: **420** train rows, **140** test rows. The positive class is phishing.
+### How the holdout is built
+
+`python -m src.train` loads `data/sample_emails.csv` and calls `sklearn.model_selection.train_test_split`.
+
+- The file has **560** synthetic emails, already balanced: **280** legitimate (`label` 0) and **280** phishing (`label` 1).
+- `test_size` is **0.25**, so the holdout is 25% and the fit uses the other 75%. That is the 75/25 split.
+- `stratify` is the label column. Each class is divided in that same ratio. The test fold is **70** legitimate and **70** phishing. The train fold is **210** of each class, **420** rows in total. One class is not over-represented in the slice the score is computed on.
+- `random_state` is seed 42, the same seed `python -m src.dataset` uses to write the CSV. The same seed rebuilds the same rows and the same split.
+- There is one split. This run does not use cross-validation, and it does not keep a second untouched holdout.
+
+The model reads four fields: `sender`, `reply_to`, `subject`, and `body`. `label` and `category` stay out of the vectorizer. The fit cannot see the answer key, and it cannot see a category name such as `invoice_payment`.
+
+The ten messages in `data/demo_emails.json` are not rows of the CSV. They are in neither fold. A perfect score on the 140 test rows says nothing about those buttons.
+
+`audit_rows` checks the mailbox before it is written. Every phishing row must trip at least one strong signal: a raw IP or userinfo link, a shortener or uncommon suffix, a lookalike or mismatched identity, a password or payment ask, a reply-to mismatch, a free-mail organization claim, or one of the HTML checks in `STRONG_FLAG_IDS`. Ordinary legitimate rows must trip none of the checks. Facilities notes are the exception. They are allowed to say "urgent", and they must not trip anything else. A few short legitimate notes may share a body. A repeated phishing body is rejected, because the same text in both folds would leak the answer across the split.
+
+### The score on that split
+
+The positive class is phishing.
 
 | | Precision | Recall | F1 |
 | --- | ---: | ---: | ---: |
@@ -141,7 +159,33 @@ Confusion matrix. Rows are the truth, columns are the prediction.
 | True legitimate | 70 | 0 |
 | True phishing | 0 | 70 |
 
-**Do not read this as production accuracy.** The teaching set was built so every phishing row carries an obvious signal, and the two classes barely overlap. A perfect score here means the split was separable. It does not mean the model is ready for a real inbox. The quoted-homework example is already enough to break it, and that message is not in the training file.
+`misclassified_test_rows` in `models/metrics.json` is empty. That is the same fact as the matrix.
+
+### What a perfect score means
+
+The score means the holdout was separable. Phishing rows were written so that a strong check fires. Legitimate rows were written to stay quiet, aside from facilities notes that may say "urgent". The two classes barely overlap, by construction. Logistic regression then recovers a boundary that the generator already drew. **1.000** here means "this split of this teaching set was easy to separate."
+
+### What a perfect score does not mean
+
+`models/metrics.json` stores the caveat in `disclaimer`: scores are from a held-out slice of the synthetic teaching set. They are not an estimate of accuracy on real mail. The Streamlit sidebar prints that same sentence beside the F1 and the accuracy, so the page does not show **1.000** alone.
+
+A reviewer should refuse the neighboring claims as well.
+
+- The probabilities are sharp because the classes were built to separate. Treat them as a ranking on this demo, not as a calibrated risk.
+- The number is one split of one synthetic file. It is not a cross-validated estimate, and it is not a result on mail the generator did not write.
+- Real phishing is shorter, more personal, and written to avoid the phrases a public teaching set repeats. This model is not ready to sit in front of a real inbox.
+- The model does not look at SPF, DKIM, DMARC, received hops, attachments, images, or the reputation of a live domain.
+- The token `example` leans phishing because the caricatures use the reserved `.example` suffix and most campus mail uses `.edu`. That is a property of this file. The weights section below records it.
+
+**Quoted in class** is already a miss, and it is outside the CSV, so it cannot pull this table down. The perfect matrix and that miss are both true. The miss is the result that should travel with the table.
+
+### Quoted in class
+
+**Quoted in class** (`quoted-homework`) is the demo that the score table cannot express.
+
+Professor Ada Okonkwo writes from `aokonkwo@northwind.edu` about Thursday's reading for CYEN 301. The classroom label is **legitimate**. The body quotes a clumsy fake: the account is suspended, verify your account, enter your password, within 2 hours, and then tells the class not to do any of that. The saved model labels the message **phishing**. The checks that fire include `credential_request` and `urgency_hits`.
+
+Bag-of-words features have no notion of quotation. The words of the lure are in the message, so they count. The button exists so that disagreement stays visible: classroom label legitimate, model label phishing. Because the body is not in `data/sample_emails.csv`, the row is in neither the 420 nor the 140. Trust that disagreement over the perfect table.
 
 ### What the weights learned
 
@@ -191,7 +235,7 @@ src/predict.py             classify one email
 src/app.py                 Streamlit demo
 models/pipeline.joblib     fitted pipeline
 models/metrics.json        the table above
-tests/                     feature checks, dataset audit, demo expectations
+tests/                     feature checks, dataset audit, evaluation honesty
 ```
 
 CSV columns: `email_id`, `sender`, `reply_to`, `subject`, `body`, `label` (1 phishing, 0 legitimate), `category`. Only the four text fields are model inputs.
@@ -214,4 +258,4 @@ Regenerate the CSV with `python -m src.dataset`. The generator checks its own wo
 python -m pytest
 ```
 
-The suite checks the security rules (including a few lookalike traps, such as a pineapple stand that is not Apple), the shape and balance of the CSV, and the saved model's verdict on every demo example. Clear caricatures must score as phishing. Ordinary campus mail, including the urgent repair, must score as legitimate. The quoted homework must score as phishing and must show the credential and urgency checks, so that known miss cannot silently flip.
+The suite checks the security rules (including a few lookalike traps, such as a pineapple stand that is not Apple, and a paid receipt that is not a payment ask), the shape and balance of the CSV, and the saved model's verdict on every demo example. Clear caricatures must score as phishing. Ordinary campus mail, including the urgent repair, must score as legitimate. The quoted homework must score as phishing while its classroom label stays legitimate, and it must show the credential and urgency checks, so that known miss cannot silently flip. The evaluation tests require the metrics disclaimer, the stratified 75/25 split at seed 42, and this file's account of what 1.000 means. A perfect F1 is not, by itself, a passing grade. The mailbox audit must reject a phishing row that trips no strong signal, an ordinary legitimate row that trips one, and a repeated phishing body.

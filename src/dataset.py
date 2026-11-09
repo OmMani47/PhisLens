@@ -922,15 +922,20 @@ def audit_rows(rows: list[dict]) -> list[str]:
     # leak across the train/test split, so only a small legit overlap is allowed.
     if extra_copies > 20:
         problems.append(f"too many duplicate bodies ({extra_copies})")
-    if any(labels != {0} and count > 1 for body, count in body_counts.items() for labels in [body_labels[body]]):
+    if any(
+        labels != {0} and count > 1
+        for body, count in body_counts.items()
+        for labels in [body_labels[body]]
+    ):
         problems.append("duplicate body is not a repeated legitimate note")
+    for row in rows:
         flag_ids = {flag["id"] for flag in analyze(row).flags}
         strong = flag_ids & STRONG_FLAG_IDS
-        if row["label"] == 1 and not strong:
+        if int(row["label"]) == 1 and not strong:
             problems.append(f"phishing without a strong signal ({row['category']}): {flag_ids or 'none'}")
-        if row["label"] == 0 and row["category"] != "facilities_note" and flag_ids:
+        if int(row["label"]) == 0 and row["category"] != "facilities_note" and flag_ids:
             problems.append(f"unexpected flag on legit {row['category']}: {sorted(flag_ids)}")
-        if row["label"] == 0 and row["category"] == "facilities_note":
+        if int(row["label"]) == 0 and row["category"] == "facilities_note":
             extra = flag_ids - {"urgency_hits"}
             if extra or "urgency_hits" not in flag_ids:
                 problems.append(f"facilities flags were {sorted(flag_ids)}")

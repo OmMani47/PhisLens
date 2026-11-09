@@ -34,3 +34,20 @@ def test_demo_then_empty_message_warns_and_clears_verdict():
     assert app.text_area[0].value == ""
     assert not app.success
     assert not app.error
+
+
+def test_sidebar_disclaimer_and_quoted_homework_mismatch():
+    app = AppTest.from_file("src/app.py", default_timeout=40)
+    app.run()
+    assert not app.exception
+    captions = " ".join(block.value for block in app.caption).lower()
+    assert "not an estimate of accuracy on real mail" in captions
+
+    _button(app, "Quoted in class").click().run()
+    assert not app.exception
+    verdict = " ".join(block.value for block in app.error).lower()
+    assert "phishing" in verdict
+    warnings = " ".join(block.value for block in app.warning)
+    assert "Classroom label: legitimate" in warnings
+    assert "The model said phishing" in warnings
+    assert not app.success

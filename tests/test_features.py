@@ -119,6 +119,25 @@ def test_credential_request_does_not_fire_on_a_denial():
     assert "credential_request" in loud
 
 
+def test_payment_request_is_an_ask_not_a_paid_receipt():
+    receipt = _flags(
+        {
+            "sender": "Campus Bookstore <receipts@bookstore.northwind.edu>",
+            "subject": "Bookstore receipt 48021",
+            "body": "Thanks for your order. Amount paid: $24.00. This mailbox is unattended.",
+        }
+    )
+    ask = _flags(
+        {
+            "sender": "Accounts Payable <billing@invoice-desk.example>",
+            "subject": "Invoice 4027",
+            "body": "This is an overdue invoice. Release the payment by wire transfer.",
+        }
+    )
+    assert "payment_request" not in receipt
+    assert "payment_request" in ask
+
+
 def test_urgency_is_not_the_word_deadline():
     flags = _flags(
         {
