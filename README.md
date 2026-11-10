@@ -85,6 +85,32 @@ streamlit run src/app.py
 
 The app binds to port **8765** (see `.streamlit/config.toml`). Open [http://127.0.0.1:8765](http://127.0.0.1:8765). Classification stays in this process. Nothing is uploaded.
 
+## Reproducibility
+
+[![tests](https://github.com/OmMani47/PhisLens/actions/workflows/tests.yml/badge.svg)](https://github.com/OmMani47/PhisLens/actions/workflows/tests.yml)
+
+`.github/workflows/tests.yml` runs on every push and every pull request. The job installs `requirements.txt` on Python 3.12 and runs `python -m pytest`. That is the whole job. There is no lint step, and the job does not retrain. The tests load the committed CSV and `models/pipeline.joblib`.
+
+The same check locally, from the repository root, after the venv above:
+
+```bash
+python -m pytest
+```
+
+Python 3.12 is the version CI uses. The pinned packages also install on 3.11. CI has not run 3.11.
+
+Seed 42 is the regenerate and retrain path. Use it when the data or the features change, then run the tests again:
+
+```bash
+python -m src.dataset   # rewrite data/sample_emails.csv, seed 42
+python -m src.train     # fit the stratified 75/25 split, seed 42, and save the model
+python -m pytest
+```
+
+`src.dataset` rewrites the teaching CSV. `src.train` overwrites `models/pipeline.joblib` and `models/metrics.json`. What those scores mean is in [Evaluation](#evaluation). This section only says how to rebuild them.
+
+The badge reports the latest run of this workflow on the default branch of `OmMani47/PhisLens`. Until the workflow file is on that branch, the badge has no status. A pull request run is listed on the Actions tab.
+
 ## Command line
 
 Score a built-in example:
@@ -236,6 +262,7 @@ src/app.py                 Streamlit demo
 models/pipeline.joblib     fitted pipeline
 models/metrics.json        the table above
 tests/                     feature checks, dataset audit, evaluation honesty
+.github/workflows/tests.yml  pytest on Python 3.12
 ```
 
 CSV columns: `email_id`, `sender`, `reply_to`, `subject`, `body`, `label` (1 phishing, 0 legitimate), `category`. Only the four text fields are model inputs.
@@ -257,5 +284,7 @@ Regenerate the CSV with `python -m src.dataset`. The generator checks its own wo
 ```bash
 python -m pytest
 ```
+
+GitHub Actions runs this same command on Python 3.12. See [Reproducibility](#reproducibility).
 
 The suite checks the security rules (including a few lookalike traps, such as a pineapple stand that is not Apple, and a paid receipt that is not a payment ask), the shape and balance of the CSV, and the saved model's verdict on every demo example. Clear caricatures must score as phishing. Ordinary campus mail, including the urgent repair, must score as legitimate. The quoted homework must score as phishing while its classroom label stays legitimate, and it must show the credential and urgency checks, so that known miss cannot silently flip. The evaluation tests require the metrics disclaimer, the stratified 75/25 split at seed 42, and this file's account of what 1.000 means. A perfect F1 is not, by itself, a passing grade. The mailbox audit must reject a phishing row that trips no strong signal, an ordinary legitimate row that trips one, and a repeated phishing body.
