@@ -1,0 +1,122 @@
+[
+  {
+    "id": "suspension",
+    "title": "Suspended account",
+    "group": "phish",
+    "classroom_label": "phishing",
+    "model_expectation": "phishing",
+    "lesson": "Urgency, a lookalike sender, a raw IP link, and a password ask. The domain is reserved.",
+    "sender": "PayPal Security <alert@paypa1-secure.example>",
+    "reply_to": "collect@mail-collector.example",
+    "subject": "URGENT!!! Your PayPal account is suspended!!!",
+    "body": "Dear customer, unusual activity was noted and the account is suspended. Verify your account and enter your password at https://203.0.113.44/login/44 within 2 hours or the account will be closed. This is a final notice."
+  },
+  {
+    "id": "invoice",
+    "title": "Invoice pressure",
+    "group": "phish",
+    "classroom_label": "phishing",
+    "model_expectation": "phishing",
+    "lesson": "A payment ask with a Reply-To on a different domain and a documentation IP address.",
+    "sender": "Northwind Accounts Payable <billing@northwind-billing.example>",
+    "reply_to": "payments@invoice-desk.example",
+    "subject": "Overdue invoice 4418",
+    "body": "Please confirm payment details for overdue invoice 4418. Enter your password at https://198.51.100.23/invoice/18 to release the payment. A wire transfer is also accepted."
+  },
+  {
+    "id": "prize",
+    "title": "Gift-card prize",
+    "group": "phish",
+    "classroom_label": "phishing",
+    "model_expectation": "phishing",
+    "lesson": "Shouty subject, a shortener-style host on a reserved domain, and a gift-card code ask.",
+    "sender": "Rewards Desk <prizes@claim-reward.xyz>",
+    "reply_to": "claim@reply-desk.example",
+    "subject": "CONGRATULATIONS!!! YOU WON A $500 GIFT CARD!!!",
+    "body": "You were selected for a limited time reward of a $500 gift card. Act now. Open https://bitly.example/r/1042 and send the codes from the card. Failure to respond forfeits the prize."
+  },
+  {
+    "id": "helpdesk",
+    "title": "Fake help desk",
+    "group": "phish",
+    "classroom_label": "phishing",
+    "model_expectation": "phishing",
+    "lesson": "The display name says Northwind IT, but the mailbox is a free webmail address.",
+    "sender": "Northwind IT Helpdesk <helpdesk@gmail.com>",
+    "reply_to": "tickets@helpdesk-queue.example",
+    "subject": "Action required: directory password",
+    "body": "This is the IT helpdesk. Verify your account and enter your password at https://northwind-verify.example/reset/24. Failure to respond within 24 hours will leave the mailbox deactivated."
+  },
+  {
+    "id": "lookalike",
+    "title": "Lookalike sign-in",
+    "group": "phish",
+    "classroom_label": "phishing",
+    "model_expectation": "phishing",
+    "lesson": "Quieter wording. The sender domain imitates Microsoft instead of shouting.",
+    "sender": "Microsoft Support <support@micr0soft-secure.example>",
+    "reply_to": "support@micr0soft-secure.example",
+    "subject": "Microsoft sign-in check",
+    "body": "Hello Priya, Microsoft needs you to confirm your identity. Open https://micr0soft-secure.example/login/24 and enter your password. The check is due within 24 hours."
+  },
+  {
+    "id": "class-note",
+    "title": "Class announcement",
+    "group": "legit",
+    "classroom_label": "legitimate",
+    "model_expectation": "legitimate",
+    "lesson": "A professor, a matching school domain, and a course link. No secret and no payment.",
+    "sender": "Prof. Ada Okonkwo <aokonkwo@northwind.edu>",
+    "reply_to": "aokonkwo@cs.northwind.edu",
+    "subject": "CS 484 office hours Thursday",
+    "body": "Office hours are Thursday 14:00-16:00 in Room 210. The decision-tree homework is posted on https://canvas.northwind.edu/courses/484. Bring one question. No reply is required if you are on track."
+  },
+  {
+    "id": "receipt",
+    "title": "Bookstore receipt",
+    "group": "legit",
+    "classroom_label": "legitimate",
+    "model_expectation": "legitimate",
+    "lesson": "The store name and the sending domain agree, and the note records a payment that already happened.",
+    "sender": "Campus Bookstore <receipts@bookstore.northwind.edu>",
+    "reply_to": "receipts@northwind.edu",
+    "subject": "Bookstore receipt 48219",
+    "body": "Thanks for your order 48219. Item: course reader. Amount paid: $42.15. You can view it at https://bookstore.northwind.edu/orders/48219. This mailbox is unattended."
+  },
+  {
+    "id": "security-reminder",
+    "title": "Calm IT note",
+    "group": "legit",
+    "classroom_label": "legitimate",
+    "model_expectation": "legitimate",
+    "lesson": "A real security reminder can mention passwords without asking for one, and it points at the campus site.",
+    "sender": "Northwind IT <it-news@northwind.edu>",
+    "reply_to": "it-news@cs.northwind.edu",
+    "subject": "Account reminder from Northwind IT",
+    "body": "Northwind IT is writing with a routine reminder. Staff will not ask you to send a password by email. If you want to review your account, type https://accounts.northwind.edu into your browser yourself. No reply is required."
+  },
+  {
+    "id": "facilities",
+    "title": "Urgent repair",
+    "group": "legit",
+    "classroom_label": "legitimate",
+    "model_expectation": "legitimate",
+    "lesson": "The word urgent is real facilities mail here. The sender matches the school and nothing asks for a secret.",
+    "sender": "Northwind Facilities <facilities@northwind.edu>",
+    "reply_to": "facilities@northwind.edu",
+    "subject": "Facilities notice: water shutoff tonight",
+    "body": "Facilities notice: there is an urgent water shutoff in the engineering building tonight from 22:00 to 23:00. No action is needed. The lab will reopen in the morning. Status page: https://status.northwind.edu/facilities."
+  },
+  {
+    "id": "quoted-homework",
+    "title": "Quoted in class",
+    "group": "edge",
+    "classroom_label": "legitimate",
+    "model_expectation": "phishing",
+    "lesson": "A professor quotes a fake message for class. Bag-of-words features still see the quoted ask, so the model can call a real email phishing.",
+    "sender": "Prof. Ada Okonkwo <aokonkwo@northwind.edu>",
+    "reply_to": "",
+    "subject": "CYEN 301 reading for Thursday",
+    "body": "On Thursday we will read a clumsy fake message together. The fake text said: your account is suspended, verify your account, and enter your password within 2 hours. We are not asking you to do any of that. The reading is posted on https://canvas.northwind.edu/courses/301. Bring one observation about which sentence created the pressure."
+  }
+]

@@ -1,0 +1,240 @@
+{
+  "disclaimer": "Scores are from a held-out slice of the synthetic teaching set. They are not an estimate of accuracy on real mail.",
+  "seed": 42,
+  "test_size": 0.25,
+  "rows": 560,
+  "train_rows": 420,
+  "test_rows": 140,
+  "positive_class": "phishing",
+  "accuracy": 1.0,
+  "precision_phishing": 1.0,
+  "recall_phishing": 1.0,
+  "f1_phishing": 1.0,
+  "precision_legitimate": 1.0,
+  "recall_legitimate": 1.0,
+  "f1_legitimate": 1.0,
+  "confusion_matrix": {
+    "rows": [
+      "true legitimate",
+      "true phishing"
+    ],
+    "columns": [
+      "predicted legitimate",
+      "predicted phishing"
+    ],
+    "matrix": [
+      [
+        70,
+        0
+      ],
+      [
+        0,
+        70
+      ]
+    ]
+  },
+  "classification_report": {
+    "legitimate": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 70.0
+    },
+    "phishing": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 70.0
+    },
+    "accuracy": 1.0,
+    "macro avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 140.0
+    },
+    "weighted avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 140.0
+    }
+  },
+  "heuristic_coefficients": [
+    {
+      "feature": "credential_request",
+      "coefficient": 1.9452
+    },
+    {
+      "feature": "brand_impersonation",
+      "coefficient": 1.8241
+    },
+    {
+      "feature": "reply_to_mismatch",
+      "coefficient": 1.4932
+    },
+    {
+      "feature": "suspicious_tld_count",
+      "coefficient": 1.1289
+    },
+    {
+      "feature": "payment_request",
+      "coefficient": 1.1168
+    },
+    {
+      "feature": "urgency_hits",
+      "coefficient": 1.0074
+    },
+    {
+      "feature": "lookalike_domain",
+      "coefficient": 0.9463
+    },
+    {
+      "feature": "ip_url_count",
+      "coefficient": 0.5368
+    },
+    {
+      "feature": "html_password_input",
+      "coefficient": 0.3412
+    },
+    {
+      "feature": "subject_excess_caps",
+      "coefficient": 0.2196
+    },
+    {
+      "feature": "subject_excess_punct",
+      "coefficient": 0.2196
+    },
+    {
+      "feature": "html_form",
+      "coefficient": 0.1814
+    },
+    {
+      "feature": "link_text_mismatch",
+      "coefficient": 0.1781
+    },
+    {
+      "feature": "shortener_count",
+      "coefficient": 0.1506
+    },
+    {
+      "feature": "freemail_org_claim",
+      "coefficient": 0.143
+    },
+    {
+      "feature": "url_userinfo",
+      "coefficient": 0.0742
+    },
+    {
+      "feature": "html_script",
+      "coefficient": 0.024
+    },
+    {
+      "feature": "url_count",
+      "coefficient": -0.5688
+    }
+  ],
+  "top_word_coefficients": {
+    "toward_phishing": [
+      {
+        "term": "invoice",
+        "coefficient": 0.1571
+      },
+      {
+        "term": "example",
+        "coefficient": 0.1447
+      },
+      {
+        "term": "payment",
+        "coefficient": 0.1348
+      },
+      {
+        "term": "confirm",
+        "coefficient": 0.1201
+      },
+      {
+        "term": "your password",
+        "coefficient": 0.1089
+      },
+      {
+        "term": "support",
+        "coefficient": 0.1086
+      },
+      {
+        "term": "verify",
+        "coefficient": 0.1086
+      },
+      {
+        "term": "secure",
+        "coefficient": 0.1025
+      },
+      {
+        "term": "login",
+        "coefficient": 0.0996
+      },
+      {
+        "term": "password",
+        "coefficient": 0.0991
+      },
+      {
+        "term": "account",
+        "coefficient": 0.0969
+      },
+      {
+        "term": "confirm payment",
+        "coefficient": 0.0935
+      }
+    ],
+    "toward_legitimate": [
+      {
+        "term": "northwind edu",
+        "coefficient": -0.3148
+      },
+      {
+        "term": "edu",
+        "coefficient": -0.3148
+      },
+      {
+        "term": "northwind",
+        "coefficient": -0.2426
+      },
+      {
+        "term": "the",
+        "coefficient": -0.2287
+      },
+      {
+        "term": "in the",
+        "coefficient": -0.1638
+      },
+      {
+        "term": "in",
+        "coefficient": -0.1597
+      },
+      {
+        "term": "facilities",
+        "coefficient": -0.1453
+      },
+      {
+        "term": "room",
+        "coefficient": -0.136
+      },
+      {
+        "term": "on",
+        "coefficient": -0.1246
+      },
+      {
+        "term": "hi",
+        "coefficient": -0.1226
+      },
+      {
+        "term": "news",
+        "coefficient": -0.1226
+      },
+      {
+        "term": "bring",
+        "coefficient": -0.1194
+      }
+    ]
+  },
+  "misclassified_test_rows": []
+}
